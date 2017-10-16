@@ -6,6 +6,26 @@ namespace Silk.Data.SQL.SQLite3.Tests
 	[TestClass]
 	public class SelectTests
 	{
+		static SelectTests()
+		{
+			TestDb.Provider.ExecuteNonQuery(QueryExpression.Transaction(
+				QueryExpression.CreateTable(
+					"SelectTestTable",
+					QueryExpression.DefineColumn("Text", SqlDataType.Text())
+					),
+				QueryExpression.Insert(
+					"SelectTestTable",
+					new[] { "Text" },
+					new object[] { "A" },
+					new object[] { "A" },
+					new object[] { "B" },
+					new object[] { "B" },
+					new object[] { "C" },
+					new object[] { "C" }
+					)
+				));
+		}
+
 		[TestMethod]
 		public void SelectValues()
 		{
@@ -143,14 +163,146 @@ namespace Silk.Data.SQL.SQLite3.Tests
 			using (var queryResult = TestDb.Provider.ExecuteReader(
 				QueryExpression.Select(
 					new[] { QueryExpression.CountFunction(
-						QueryExpression.Distinct(QueryExpression.Column("tbl_name"))
+						QueryExpression.Distinct(QueryExpression.Column("Text"))
 						) },
-					from: QueryExpression.Table("sqlite_master")
+					from: QueryExpression.Table("SelectTestTable")
 				)))
 			{
 				Assert.IsTrue(queryResult.HasRows);
 				Assert.IsTrue(queryResult.Read());
-				Assert.IsTrue(queryResult.GetInt32(0) > 0);
+				Assert.AreEqual(3, queryResult.GetInt32(0));
+			}
+		}
+
+		[TestMethod]
+		public void SelectWithOrderBy()
+		{
+			using (var queryResult = TestDb.Provider.ExecuteReader(
+				QueryExpression.Select(
+					new[] { QueryExpression.All() },
+					from: QueryExpression.Table("SelectTestTable"),
+					orderBy: new[] { QueryExpression.Descending(QueryExpression.Column("Text")) }
+				)))
+			{
+				Assert.IsTrue(queryResult.HasRows);
+
+				Assert.IsTrue(queryResult.Read());
+				Assert.AreEqual("C", queryResult.GetString(0));
+				Assert.IsTrue(queryResult.Read());
+				Assert.AreEqual("C", queryResult.GetString(0));
+
+				Assert.IsTrue(queryResult.Read());
+				Assert.AreEqual("B", queryResult.GetString(0));
+				Assert.IsTrue(queryResult.Read());
+				Assert.AreEqual("B", queryResult.GetString(0));
+
+				Assert.IsTrue(queryResult.Read());
+				Assert.AreEqual("A", queryResult.GetString(0));
+				Assert.IsTrue(queryResult.Read());
+				Assert.AreEqual("A", queryResult.GetString(0));
+			}
+		}
+
+		[TestMethod]
+		public void SelectWithGroupBy()
+		{
+			using (var queryResult = TestDb.Provider.ExecuteReader(
+				QueryExpression.Select(
+					new[] { QueryExpression.All() },
+					from: QueryExpression.Table("SelectTestTable"),
+					orderBy: new[] { QueryExpression.Column("Text") },
+					groupBy: new[] { QueryExpression.Column("Text") }
+				)))
+			{
+				Assert.IsTrue(queryResult.HasRows);
+
+				Assert.IsTrue(queryResult.Read());
+				Assert.AreEqual("A", queryResult.GetString(0));
+
+				Assert.IsTrue(queryResult.Read());
+				Assert.AreEqual("B", queryResult.GetString(0));
+
+				Assert.IsTrue(queryResult.Read());
+				Assert.AreEqual("C", queryResult.GetString(0));
+			}
+		}
+
+		[TestMethod]
+		public void SelectWithLimit()
+		{
+			using (var queryResult = TestDb.Provider.ExecuteReader(
+				QueryExpression.Select(
+					new[] { QueryExpression.All() },
+					from: QueryExpression.Table("SelectTestTable"),
+					orderBy: new[] { QueryExpression.Column("Text") },
+					limit: QueryExpression.Value(1)
+				)))
+			{
+				Assert.IsTrue(queryResult.HasRows);
+
+				Assert.IsTrue(queryResult.Read());
+				Assert.AreEqual("A", queryResult.GetString(0));
+
+				Assert.IsFalse(queryResult.Read());
+			}
+		}
+
+		[TestMethod]
+		public void SelectWithOffset()
+		{
+			using (var queryResult = TestDb.Provider.ExecuteReader(
+				QueryExpression.Select(
+					new[] { QueryExpression.All() },
+					from: QueryExpression.Table("SelectTestTable"),
+					orderBy: new[] { QueryExpression.Column("Text") },
+					offset: QueryExpression.Value(2)
+				)))
+			{
+				Assert.IsTrue(queryResult.HasRows);
+
+				Assert.IsTrue(queryResult.Read());
+				Assert.AreEqual("B", queryResult.GetString(0));
+			}
+		}
+
+		[TestMethod]
+		public void SelectWithOffsetAndLimit()
+		{
+			using (var queryResult = TestDb.Provider.ExecuteReader(
+				QueryExpression.Select(
+					new[] { QueryExpression.All() },
+					from: QueryExpression.Table("SelectTestTable"),
+					orderBy: new[] { QueryExpression.Column("Text") },
+					offset: QueryExpression.Value(2),
+					limit: QueryExpression.Value(1)
+				)))
+			{
+				Assert.IsTrue(queryResult.HasRows);
+
+				Assert.IsTrue(queryResult.Read());
+				Assert.AreEqual("B", queryResult.GetString(0));
+
+				Assert.IsFalse(queryResult.Read());
+			}
+		}
+
+		[TestMethod]
+		public void SelectWithWhere()
+		{
+			using (var queryResult = TestDb.Provider.ExecuteReader(
+				QueryExpression.Select(
+					new[] { QueryExpression.All() },
+					from: QueryExpression.Table("SelectTestTable"),
+					where: QueryExpression.Compare(QueryExpression.Column("Text"), ComparisonOperator.AreEqual, QueryExpression.Value("C")),
+					limit: QueryExpression.Value(1)
+				)))
+			{
+				Assert.IsTrue(queryResult.HasRows);
+
+				Assert.IsTrue(queryResult.Read());
+				Assert.AreEqual("C", queryResult.GetString(0));
+
+				Assert.IsFalse(queryResult.Read());
 			}
 		}
 	}
