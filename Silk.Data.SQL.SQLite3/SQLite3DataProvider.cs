@@ -36,7 +36,7 @@ namespace Silk.Data.SQL.SQLite3
 			NonBinaryGUIDs = nonBinaryGUIDs;
 		}
 
-		protected override DbCommand CreateCommand(DbConnection connection, SqlQuery sqlQuery)
+		public override DbCommand CreateCommand(DbConnection connection, SqlQuery sqlQuery)
 		{
 			if (NonBinaryGUIDs && sqlQuery.QueryParameters != null)
 			{
