@@ -105,7 +105,7 @@ namespace Silk.Data.SQL.SQLite3
 						{
 							Sql.Append($", CONSTRAINT {Converter.QuoteIdentifier("PK")} PRIMARY KEY ({string.Join(",", primaryKeyColumnNames)})");
 						}
-						Sql.Append(")");
+						Sql.Append("); ");
 						break;
 					default:
 						base.VisitQuery(queryExpression);
