@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Silk.Data.SQL.ProviderTests\Silk.Data.SQL.ProviderTests\Silk.Data.SQL.ProviderTests.csproj" />
     <ProjectReference Include="..\Silk.Data.SQL.SQLite3\Silk.Data.SQL.SQLite3.csproj" />
   </ItemGroup>
 

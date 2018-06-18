@@ -2,6 +2,10 @@
 
 SQLite3 provider for `Silk.Data.SQL.Base`.
 
+# Limitations
+
+SQLite3 lacks full support for DECIMAL data types. Decimal data upto 15 digits is supported in testing, anything larger and SQLite3 will return the 15 most significant digits.
+
 # Usage
 
 To execute SQL statements just create an instance of `SQLite3DataProvider`, passing in the name of the file you wish to store your database in.

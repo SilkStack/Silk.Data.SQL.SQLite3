@@ -1,0 +1,4 @@
+[submodule "Silk.Data.SQL.ProviderTests"]
+	path = Silk.Data.SQL.ProviderTests
+	url = git@github.com:SilkStack/Silk.Data.SQL.ProviderTests.git
+	branch = master
