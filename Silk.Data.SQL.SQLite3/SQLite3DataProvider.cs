@@ -19,22 +19,22 @@ namespace Silk.Data.SQL.SQLite3
 
 		private InMemorySqlConnection _inMemoryConnection;
 
-		public SQLite3DataProvider(string file, bool nonBinaryGUIDs = false)
+		public SQLite3DataProvider(SqliteConnectionStringBuilder connectionStringBuilder, bool nonBinaryGUIDs = false)
 		{
-			var connectionStringBuilder = new SqliteConnectionStringBuilder
+			NonBinaryGUIDs = nonBinaryGUIDs;
+			_connectionString = connectionStringBuilder.ConnectionString;
+			if (connectionStringBuilder.Mode == SqliteOpenMode.Memory)
 			{
-				Mode = SqliteOpenMode.ReadWriteCreate,
-				DataSource = file
-			};
-			if (file == ":memory:")
-			{
-				connectionStringBuilder.Mode = SqliteOpenMode.Memory;
-				_inMemoryConnection = new InMemorySqlConnection(connectionStringBuilder.ConnectionString);
+				_inMemoryConnection = new InMemorySqlConnection(_connectionString);
 				_inMemoryConnection.Open();
 			}
-			_connectionString = connectionStringBuilder.ConnectionString;
-			NonBinaryGUIDs = nonBinaryGUIDs;
 		}
+
+		public SQLite3DataProvider(string connectionString, bool nonBinaryGUIDs = false) :
+			this(new SqliteConnectionStringBuilder(connectionString), nonBinaryGUIDs) { }
+
+		public SQLite3DataProvider(Uri file, bool nonBinaryGUIDs = false) :
+			this(new SqliteConnectionStringBuilder { Mode = SqliteOpenMode.ReadWriteCreate, DataSource = file.OriginalString }, nonBinaryGUIDs) { }
 
 		public override DbCommand CreateCommand(DbConnection connection, SqlQuery sqlQuery)
 		{
