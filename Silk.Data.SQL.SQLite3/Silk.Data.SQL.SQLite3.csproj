@@ -14,7 +14,7 @@ Part of the SilkStack project.</Description>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Sqlite" Version="2.0.1" />
-    <PackageReference Include="Silk.Data.SQL.Base" Version="0.0.4" />
+    <PackageReference Include="Silk.Data.SQL.Base" Version="0.0.5" />
   </ItemGroup>
 
 </Project>
