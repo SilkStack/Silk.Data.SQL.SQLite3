@@ -51,6 +51,14 @@ namespace Silk.Data.SQL.SQLite3
 		{
 			switch (queryExpression)
 			{
+				case ConcatenateQueryExpression concatenateQueryExpression:
+					for (var i = 0; i < concatenateQueryExpression.Expressions.Length; i++)
+					{
+						ExpressionWriter.Visit(concatenateQueryExpression.Expressions[i]);
+						if (i < concatenateQueryExpression.Expressions.Length - 1)
+							Sql.Append(" || ");
+					}
+					return;
 				case LastInsertIdFunctionExpression lastInsertIdExpression:
 					Sql.Append("last_insert_rowid()");
 					return;
