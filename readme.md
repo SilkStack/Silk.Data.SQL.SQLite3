@@ -2,6 +2,16 @@
 
 SQLite3 provider for `Silk.Data.SQL.Base`.
 
+# Installing
+
+`Silk.Data.SQL.SQLite3` is available as a NuGet package: https://www.nuget.org/packages/Silk.Data.SQL.SQLite3
+
+You can install it from the NuGet package manager in Visual Studio or from command line with dotnet core:
+
+~~~~
+dotnet add package Silk.Data.SQL.SQLite3
+~~~~
+
 # Limitations
 
 SQLite3 lacks full support for DECIMAL data types. Decimal data upto 15 digits is supported in testing, anything larger and SQLite3 will return the 15 most significant digits.
